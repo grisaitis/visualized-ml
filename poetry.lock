@@ -1,4 +1,15 @@
 [[package]]
+category = "main"
+description = "Abseil Python Common Libraries, see https://github.com/abseil/abseil-py."
+name = "absl-py"
+optional = false
+python-versions = "*"
+version = "0.9.0"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 category = "dev"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 name = "appdirs"
@@ -236,6 +247,32 @@ pipfile = ["pipreqs", "requirementslib"]
 pyproject = ["toml"]
 requirements = ["pipreqs", "pip-api"]
 xdg_home = ["appdirs (>=1.4.0)"]
+
+[[package]]
+category = "main"
+description = "Differentiate, compile, and transform Numpy code."
+name = "jax"
+optional = false
+python-versions = ">=3.6"
+version = "0.1.63"
+
+[package.dependencies]
+absl-py = "*"
+numpy = ">=1.12"
+opt_einsum = "*"
+
+[[package]]
+category = "main"
+description = "XLA library for JAX"
+name = "jaxlib"
+optional = false
+python-versions = ">=3.6"
+version = "0.1.44"
+
+[package.dependencies]
+absl-py = "*"
+numpy = ">=1.12"
+scipy = "*"
 
 [[package]]
 category = "main"
@@ -580,6 +617,21 @@ name = "numpy"
 optional = false
 python-versions = ">=3.5"
 version = "1.18.2"
+
+[[package]]
+category = "main"
+description = "Optimizing numpys einsum function"
+name = "opt-einsum"
+optional = false
+python-versions = ">=3.5"
+version = "3.2.1"
+
+[package.dependencies]
+numpy = ">=1.7"
+
+[package.extras]
+docs = ["sphinx (1.2.3)", "sphinxcontrib-napoleon", "sphinx-rtd-theme", "numpydoc"]
+tests = ["pytest", "pytest-cov", "pytest-pep8"]
 
 [[package]]
 category = "dev"
@@ -1018,10 +1070,13 @@ version = "3.5.1"
 notebook = ">=4.4.1"
 
 [metadata]
-content-hash = "a086e6b754babfd1b728af1a2886403e9987731b54be1c56a778ce946ae617b7"
+content-hash = "5752bfe949e74aae0b9496004909535da535917352d0c58a87eff524da57d799"
 python-versions = "^3.8"
 
 [metadata.files]
+absl-py = [
+    {file = "absl-py-0.9.0.tar.gz", hash = "sha256:75e737d6ce7723d9ff9b7aa1ba3233c34be62ef18d5859e706b8fdc828989830"},
+]
 appdirs = [
     {file = "appdirs-1.4.3-py2.py3-none-any.whl", hash = "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e"},
     {file = "appdirs-1.4.3.tar.gz", hash = "sha256:9e5896d1372858f8dd3344faf4e5014d21849c756c8d5701f78f8a103b372d92"},
@@ -1097,6 +1152,17 @@ ipywidgets = [
 isort = [
     {file = "isort-4.3.21-py2.py3-none-any.whl", hash = "sha256:6e811fcb295968434526407adb8796944f1988c5b65e8139058f2014cbe100fd"},
     {file = "isort-4.3.21.tar.gz", hash = "sha256:54da7e92468955c4fceacd0c86bd0ec997b0e1ee80d97f67c35a78b719dccab1"},
+]
+jax = [
+    {file = "jax-0.1.63.tar.gz", hash = "sha256:c6b43f486cb37fbc591beb5544656e650a66dc40016c382de2379de8b14d1114"},
+]
+jaxlib = [
+    {file = "jaxlib-0.1.44-cp36-none-macosx_10_9_x86_64.whl", hash = "sha256:5ca0690e16e634c88e5d691451a000f0c9dd6949df7cec2df84ba66103b5ebd4"},
+    {file = "jaxlib-0.1.44-cp36-none-manylinux2010_x86_64.whl", hash = "sha256:07adaf8d985b045e6f956e9e12bfed01fe1b9f199562058078e44e77718286ee"},
+    {file = "jaxlib-0.1.44-cp37-none-macosx_10_9_x86_64.whl", hash = "sha256:fa4df3335d2c58316808eda50221bad0ee1a1ed41e1785a99fa654c26bd74436"},
+    {file = "jaxlib-0.1.44-cp37-none-manylinux2010_x86_64.whl", hash = "sha256:2f431ab6adecfddd8b9afc76c4d8eb116d2a1690a171b15380215165e2f2053f"},
+    {file = "jaxlib-0.1.44-cp38-none-macosx_10_9_x86_64.whl", hash = "sha256:ed81f5050ff9486e59811781cec5455d2fb5218b5efe49faa02b153f9b7f2c91"},
+    {file = "jaxlib-0.1.44-cp38-none-manylinux2010_x86_64.whl", hash = "sha256:b2e3003ab4da6d635312eabbbc3033882c80fa87b826e6e8c7dd8659567e8639"},
 ]
 jedi = [
     {file = "jedi-0.16.0-py2.py3-none-any.whl", hash = "sha256:b4f4052551025c6b0b0b193b29a6ff7bdb74c52450631206c262aef9f7159ad2"},
@@ -1284,6 +1350,10 @@ numpy = [
     {file = "numpy-1.18.2-cp38-cp38-win32.whl", hash = "sha256:5e0feb76849ca3e83dd396254e47c7dba65b3fa9ed3df67c2556293ae3e16de3"},
     {file = "numpy-1.18.2-cp38-cp38-win_amd64.whl", hash = "sha256:ba3c7a2814ec8a176bb71f91478293d633c08582119e713a0c5351c0f77698da"},
     {file = "numpy-1.18.2.zip", hash = "sha256:e7894793e6e8540dbeac77c87b489e331947813511108ae097f1715c018b8f3d"},
+]
+opt-einsum = [
+    {file = "opt_einsum-3.2.1-py3-none-any.whl", hash = "sha256:96f819d46da2f937eaf326336a114aaeccbcbdb9de460d42e8b5f480a69adca7"},
+    {file = "opt_einsum-3.2.1.tar.gz", hash = "sha256:83b76a98d18ae6a5cc7a0d88955a7f74881f0e567a0f4c949d24c942753eb998"},
 ]
 packaging = [
     {file = "packaging-20.3-py2.py3-none-any.whl", hash = "sha256:82f77b9bee21c1bafbf35a84905d604d5d1223801d639cf3ed140bd651c08752"},
