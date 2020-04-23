@@ -2,7 +2,6 @@ import jax
 
 from graphical_models.non_probabilistic.k_means_mixture import KMeansMixture
 
-
 n = 1000000
 key = jax.random.PRNGKey(seed=0)
 

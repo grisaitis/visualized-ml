@@ -3,7 +3,11 @@ import numpy as np
 
 class HiddenMarkovModel:
     def __init__(
-        self, initial_state_prob, transition_matrix, state_means, state_variances
+        self,
+        initial_state_prob,
+        transition_matrix,
+        state_means,
+        state_variances,
     ):
         self.k_states = len(initial_state_prob)
         self.initial_state_prob = initial_state_prob

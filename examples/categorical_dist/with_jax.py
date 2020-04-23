@@ -2,7 +2,6 @@ import jax
 import jax.numpy as np
 import jax.scipy as scipy
 
-
 key = jax.random.PRNGKey(seed=0)
 
 n = 10
