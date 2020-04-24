@@ -3,25 +3,25 @@ import jax
 
 class KMeansMixture:
     def __init__(self, means):
+        self.k = means.shape[0]
+        assert means.shape == (self.k,)
         self.means = means
 
-    @classmethod
-    def learn_from_data(cls, key, k_means, x):
-        def e_step(x, means):
-            distances = jax.numpy.abs(x[:, None] - means[None, :])
-            assert distances.shape == (
-                x.shape[0],
-                means.shape[0],
-            ), distances.shape
-            assignment_indices = jax.numpy.argmin(distances, axis=1)
-            assert (
-                assignment_indices.shape == x.shape
-            ), assignment_indices.shape
-            assignments = jax.numpy.eye(means.shape[0])[assignment_indices]
-            assert assignments.shape == (x.shape[0], k_means)
-            return assignments
+    def assign(self, x):
+        n = x.shape[0]
+        distances = jax.numpy.abs(x[:, None] - self.means[None, :])
+        assert distances.shape == (n, self.k), distances.shape
+        assignment_indices = jax.numpy.argmin(distances, axis=1)
+        assert assignment_indices.shape == x.shape, assignment_indices.shape
+        assignments = jax.numpy.identity(self.k)[assignment_indices]
+        assert assignments.shape == (n, self.k), assignments.shape
+        return assignments
 
-        def m_step(x, assignments):
+    @classmethod
+    def learn_with_lloyds_algorithm(cls, key, k_means, x):
+        def update(means):
+            kmm = cls(means)
+            assignments = kmm.assign(x)
             sum_x_per_k = x @ assignments
             assert sum_x_per_k.shape == (k_means,)
             count_per_k = jax.numpy.sum(assignments, axis=0)
@@ -35,14 +35,8 @@ class KMeansMixture:
         while True:
             t += 1
             print("iteration", t)
-            assignments_t = e_step(x, means_t_minus_1)
-            # print("assignments", assignments_t)
-            means_t = m_step(x, assignments_t)
+            means_t = update(means_t_minus_1)
             print("means", means_t)
-            assigned_means = assignments_t @ means_t
-            assert assigned_means.shape == x.shape
-            # print("assignmed_means", assigned_means)
-            # print("x", x)
             change_magnitude = jax.numpy.linalg.norm(means_t - means_t_minus_1)
             print("change_magnitude", change_magnitude)
             if change_magnitude < 0.0001:
