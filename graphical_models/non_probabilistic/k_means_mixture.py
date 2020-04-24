@@ -4,7 +4,7 @@ import jax
 class KMeansMixture:
     def __init__(self, means):
         self.k = means.shape[0]
-        assert means.shape == (self.k,)
+        self.d = means.shape[1] if means.ndim == 2 else None
         self.means = means
 
     def assign(self, x):
