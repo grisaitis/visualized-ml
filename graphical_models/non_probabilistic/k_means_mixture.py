@@ -12,6 +12,14 @@ class KMeansMixture:
 
     @classmethod
     def learn_with_lloyds_algorithm(cls, key, k_means, x):
+        def get_init_means(key, k_means, x):
+            n = x.shape[0]
+            random_indices = jax.random.shuffle(key, jax.numpy.arange(n))[
+                0:k_means
+            ]
+            return x[random_indices]
+
+
         def update(means):
             kmm = cls(means)
             assignments = kmm.assign(x)
@@ -23,7 +31,7 @@ class KMeansMixture:
             assert means.shape == (assignments.shape[1],)
             return means
 
-        means_t_minus_1 = jax.random.normal(key, shape=(k_means,))
+        means_t_minus_1 = get_init_means(key, k_means, x)
         t = 0
         while True:
             t += 1
