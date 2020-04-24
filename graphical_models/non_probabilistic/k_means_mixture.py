@@ -11,12 +11,12 @@ class KMeansMixture:
         return _assign(x, self.means)
 
     @classmethod
-    def learn_with_lloyds_algorithm(cls, key, k_means, x):
+    def learn_with_lloyds_algorithm(cls, key, x, k):
         def update(x, means):
             assignments = _assign(x, means)
             return _update_means(x, assignments)
 
-        means_t_minus_1 = _sample_no_replace(key, x, k_means)
+        means_t_minus_1 = _sample_no_replace(key, x, k)
         t = 0
         while True:
             t += 1
