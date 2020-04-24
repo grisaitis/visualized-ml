@@ -1,4 +1,4 @@
-from iris_pgm import __version__
+from graphical_models import __version__
 
 
 def test_version():
