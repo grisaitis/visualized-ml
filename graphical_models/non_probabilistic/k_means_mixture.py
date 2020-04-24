@@ -12,38 +12,22 @@ class KMeansMixture:
 
     @classmethod
     def learn_with_lloyds_algorithm(cls, key, k_means, x):
-        def get_init_means(key, k_means, x):
-            n = x.shape[0]
-            random_indices = jax.random.shuffle(key, jax.numpy.arange(n))[
-                0:k_means
-            ]
-            return x[random_indices]
+        def update(x, means):
+            assignments = _assign(x, means)
+            return _update_means(x, assignments)
 
-
-        def update(means):
-            kmm = cls(means)
-            assignments = kmm.assign(x)
-            sum_x_per_k = x @ assignments
-            assert sum_x_per_k.shape == (k_means,)
-            count_per_k = jax.numpy.sum(assignments, axis=0)
-            assert count_per_k.shape == (k_means,)
-            means = (sum_x_per_k + 1e-8) / (count_per_k + 1e-8)
-            assert means.shape == (assignments.shape[1],)
-            return means
-
-        means_t_minus_1 = get_init_means(key, k_means, x)
+        means_t_minus_1 = _sample_no_replace(key, x, k_means)
         t = 0
         while True:
             t += 1
             print("iteration", t)
-            means_t = update(means_t_minus_1)
+            means_t = update(x, means_t_minus_1)
             print("means", means_t)
             change_magnitude = jax.numpy.linalg.norm(means_t - means_t_minus_1)
             print("change_magnitude", change_magnitude)
             if change_magnitude < 1e-8:
                 break
             means_t_minus_1 = means_t
-
         return cls(means_t)
 
 
@@ -57,3 +41,24 @@ def _assign(x, means):
     assignments = jax.numpy.identity(k)[assignment_indices]
     assert assignments.shape == (n, k), assignments.shape
     return assignments
+
+
+@jax.jit
+def _update_means(x, assignments):
+    n, k = assignments.shape
+    sum_x_per_k = x @ assignments
+    assert sum_x_per_k.shape == (k,)
+    count_per_k = jax.numpy.sum(assignments, axis=0)
+    assert count_per_k.shape == (k,)
+    means = (sum_x_per_k + 1e-8) / (count_per_k + 1e-8)
+    assert means.shape == (k,)
+    means = jax.numpy.sort(means)
+    return means
+
+
+def _sample_no_replace(key, x, size):
+    n = x.shape[0]
+    return x[jax.random.shuffle(key, jax.numpy.arange(n))[:size]]
+
+
+_sample_no_replace = jax.jit(_sample_no_replace, static_argnums=(2,))
