@@ -27,15 +27,15 @@ def update_em(x, weights, locs, scales):
     assert locs.shape == (k,), locs.shape
     assert scales.shape == (k,), scales.shape
 
-    prob_xn_given_zn = stats.norm.pdf(x[:, None], locs, scales)  # (n, k)
-    assert prob_xn_given_zn.shape == (n, k)
-    prob_xn = prob_xn_given_zn @ weights  # (n,)
-    assert prob_xn.shape == (n,)
-    a1 = prob_xn_given_zn / prob_xn[:, None]
+    prob_xi_given_zi = stats.norm.pdf(x[:, None], locs, scales)  # (n, k)
+    assert prob_xi_given_zi.shape == (n, k)
+    prob_xi = prob_xi_given_zi @ weights  # (n,)
+    assert prob_xi.shape == (n,)
+    a1 = prob_xi_given_zi / prob_xi[:, None]
     assert a1.shape == (n, k)
-    prob_zn_given_xn = weights * a1  # (n, k)
-    assert prob_zn_given_xn.shape == (n, k)
-    responsibilities = prob_zn_given_xn  # (n, k)
+    prob_zi_given_xi = weights * a1  # (n, k)
+    assert prob_zi_given_xi.shape == (n, k)
+    responsibilities = prob_zi_given_xi  # (n, k)
 
     x  # (n, k)
     n_k = np.sum(responsibilities, axis=0)  # (k,)
@@ -55,11 +55,11 @@ def update_em(x, weights, locs, scales):
     scales_new = np.sqrt(np.sum(responsibilities * square_of_x_minus_locs_new, axis=0) / n_k)
     assert scales_new.shape == (k,)
 
-    prob_xn_given_zn_and_new_params = stats.norm.pdf(x[:, None], locs_new, scales_new)
-    assert prob_xn_given_zn_and_new_params.shape == (n, k)
-    prob_xn_given_new_params =  prob_xn_given_zn_and_new_params @ weights_new
-    assert prob_xn_given_new_params.shape == (n,)
-    log_likelihood = np.sum(np.log(prob_xn_given_new_params))
+    prob_xi_given_zi_and_new_params = stats.norm.pdf(x[:, None], locs_new, scales_new)
+    assert prob_xi_given_zi_and_new_params.shape == (n, k)
+    prob_xi_given_new_params =  prob_xi_given_zi_and_new_params @ weights_new
+    assert prob_xi_given_new_params.shape == (n,)
+    log_likelihood = np.sum(np.log(prob_xi_given_new_params))
 
     return log_likelihood, weights_new, locs_new, scales_new
 
