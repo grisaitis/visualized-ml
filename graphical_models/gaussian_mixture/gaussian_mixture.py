@@ -1,4 +1,4 @@
-import jax
+import numpy as np
 
 
 class GaussianMixture:
@@ -7,10 +7,11 @@ class GaussianMixture:
         assert weights.shape == (self.k,)
         assert locs.shape == (self.k,)
         assert scales.shape == (self.k,)
-        assert sum(weights) == 1
-        self.weights = weights
-        self.locs = locs
-        self.scales = scales
+        assert np.isclose(np.sum(weights), 1.0), (weights, np.sum(weights))
+        sort_order = locs.argsort()
+        self.weights = weights.take(sort_order)
+        self.locs = locs.take(sort_order)
+        self.scales = scales.take(sort_order)
 
     def __repr__(self):
         return (
@@ -21,17 +22,10 @@ class GaussianMixture:
             f"\n)"
         )
 
-    def sample(self, key, n):
-        return _sample(key, n, self.weights, self.locs, self.scales)
-
-
-def _sample(key, n, weights, locs, scales):
-    logits = jax.scipy.special.logit(weights)
-    mixture_indices = jax.random.categorical(key, logits, shape=(n,))
-    sample_scales = scales.take(mixture_indices)
-    sample_locs = locs.take(mixture_indices)
-    normals = jax.random.normal(key, shape=(n,))
-    return normals * sample_scales + sample_locs
-
-
-_sample = jax.jit(_sample, static_argnums=(1,))
+    def sample(self, seed, n):
+        rng = np.random.default_rng(seed)
+        normal_samples = rng.normal(size=(n,))
+        mixture_assignments = rng.choice(self.k, size=n, p=self.weights)
+        return normal_samples * self.scales.take(
+            mixture_assignments
+        ) + self.locs.take(mixture_assignments)
