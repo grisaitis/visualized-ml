@@ -2,43 +2,36 @@ import jax
 
 
 class GaussianMixture:
-    def __init__(self, locs, scales, mixture_weights):
-        self.locs = jax.numpy.array(locs)
-        self.scales = jax.numpy.array(scales)
-        self.mixture_weights = jax.numpy.array(mixture_weights)
-        self.mixture_logits = jax.scipy.special.logit(mixture_weights)
+    def __init__(self, weights, locs, scales):
+        self.k = len(weights)
+        assert weights.shape == (self.k,)
+        assert locs.shape == (self.k,)
+        assert scales.shape == (self.k,)
+        assert sum(weights) == 1
+        self.weights = weights
+        self.locs = locs
+        self.scales = scales
 
-    @staticmethod
-    @jax.jit
-    def sample_from_gaussian_mixture(key, locs, scales, mixture_logits, n):
-        # print(n)
-        n = int(n)
-        # import sys; sys.exit()
-        mixture_indices = jax.random.categorical(
-            key, mixture_logits, shape=(int(n),)
-        )
-        gaussians = jax.random.normal(key, shape=(n,))
-        return gaussians * scales.take(mixture_indices) + locs.take(
-            mixture_indices
-        )
-
-    def sample_jit(self, n):
-        # fails because of n being cast to a ScaledArray thing
-        key = jax.random.PRNGKey(seed=0)
-        # n = jax.numpy.array(n)
-        return self.sample_from_gaussian_mixture(
-            key, self.locs, self.scales, self.mixture_logits, n
+    def __repr__(self):
+        return (
+            f"GaussianMixture("
+            f"\n\tweights={repr(self.weights)},"
+            f"\n\tlocs={repr(self.locs)},"
+            f"\n\tscales={repr(self.scales)}"
+            f"\n)"
         )
 
     def sample(self, key, n):
-        mixture_indices = jax.random.categorical(
-            key, self.mixture_logits, shape=(n,)
-        )
-        standard_normal_samples = jax.random.normal(key, shape=(n,))
-        scales = self.scales.take(mixture_indices)
-        locs = self.locs.take(mixture_indices)
-        return standard_normal_samples * scales + locs
+        return _sample(key, n, self.weights, self.locs, self.scales)
 
 
-def _sample(key, locs, scales, size):
-    return
+def _sample(key, n, weights, locs, scales):
+    logits = jax.scipy.special.logit(weights)
+    mixture_indices = jax.random.categorical(key, logits, shape=(n,))
+    sample_scales = scales.take(mixture_indices)
+    sample_locs = locs.take(mixture_indices)
+    normals = jax.random.normal(key, shape=(n,))
+    return normals * sample_scales + sample_locs
+
+
+_sample = jax.jit(_sample, static_argnums=(1,))
