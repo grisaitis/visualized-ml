@@ -1,8 +1,27 @@
 # graphical models
 
-"Probabilistic graphical models" is a framework or formalism for describing many probalistic models in machine learning and statistics. Models that can be defined and analyzed in this framework include linear regression, gaussian mixtures, many latent variable models, markov networks, bayesian networks, latent dirichlet allocation, hierarchical linear regression, conditional random fields, restricted boltzmann machines, and many more i can't think of.
+## how to run examples
 
-in general, a graphical model is a representation of a joint probability distribution of a set of random variables. variables are nodes in a graph, and edges are "associations" between variables - correlations, conditional probabilities, potential functions, etc - depending on the model.
+i have a few demos under examples/
 
-this is part of my auditing [CMU's class on probabilistic graphical models](https://www.cs.cmu.edu/~epxing/Class/10708-20/) led by Eric Xing.
+to run this code you need
+- python 3.8 (maybe a version or two less)
+- `pip install jax jaxlib numpy`
 
+you can also install dependencies with poetry:
+- `poetry install`
+
+and then run examples like
+- `python examples/gaussian_mixture/gaussian_mixture_em.py`
+
+## background
+
+i made this repo while i audit [CMU's class on probabilistic graphical models](https://www.cs.cmu.edu/~epxing/Class/10708-20/) led by Eric Xing. 
+
+Probabilistic graphical modeling in general is study of probabilistic machine learning. It provides a foundation for modeling approaches as diverse as deep learning, bayesian linear regression, clustering, topic modeling (e.g. latent dirichlet allocation), conditional random fields, restricted boltzmann machines (on which deep learning is based), and any other machine learning model that can be expressed in terms of conditional probabilities. 
+
+some things i want to implement and understand better are:
+- models like gaussian mixtures, latent variable models (e.g. topic modeling with LDA), hidden markov models
+- algorithms for approximate probabilistic inference like variational and monte carlo methods
+- algorithms for learning, like expectation maximization
+- visualizations of these
