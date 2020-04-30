@@ -23,6 +23,9 @@ def log_likelihood_differentiable(x, weights, locs, scales):
     return np.mean(log_likelihoods)
 
 
+log_likelihood_grad = jax.grad(log_likelihood_differentiable, argnums=(1, 2, 3))
+
+
 def initialize_parameters(k):
     weights = np.ones(shape=(k,)) / k
     locs = np_rng.normal(size=(k,))
@@ -30,24 +33,23 @@ def initialize_parameters(k):
     return weights, locs, scales
 
 
-def learn_likelihood_gradient(x, k, oracle=None):
+def learn_likelihood_gradient(x, k, oracle=None, step=0.1):
     weights, locs, scales = initialize_parameters(k)
 
     t = 0
-    step = 0.1
     log_likelihood_old = GaussianMixture(
         weights, locs, scales
     ).compute_log_likelihood(x)
     while True:
         t += 1
-        log_likelihood_grad = jax.grad(
-            log_likelihood_differentiable, argnums=(1, 2, 3)
-        )
         weights_grad, locs_grad, scales_grad = log_likelihood_grad(
             x, weights, locs, scales
         )
+        # project grad vector into probability simplex
+        weights_grad -= np.mean(weights_grad)
+        # update parameters
         weights = weights + step * weights_grad
-        weights = np.clip(weights, 0, 1)
+        weights = np.clip(weights, 1e-8, 1 - 1e-8)
         weights = weights / np.sum(weights)
         locs = locs + step * locs_grad
         scales = scales + step * scales_grad
@@ -58,14 +60,10 @@ def learn_likelihood_gradient(x, k, oracle=None):
         if oracle:
             print("oracle", oracle)
         print("learned", gmm_learned)
-        print("weights_grad\n", weights_grad)
-        print("locs_grad\n", locs_grad)
-        print("scales_grad\n", scales_grad)
         print("log_likelihood", log_likelihood)
         print(
             "improvement", log_likelihood - log_likelihood_old,
         )
-
         assert not np.isnan(log_likelihood)
         if np.any(weights < 0):
             break
