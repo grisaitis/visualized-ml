@@ -5,33 +5,20 @@ import scipy.stats as stats
 from graphical_models.gaussian_mixture.gaussian_mixture import GaussianMixture
 
 np.set_printoptions(suppress=True)
-
 np_rng = np.random.default_rng(seed=0)
 
-# weights = np.array([0.4, 0.6])
-k = 4
-alpha = np.ones((k,)) * 10
-weights = np_rng.dirichlet(alpha)
-# locs = np.array([-5.0, 5.0])
+k = 2
+alpha_dirichlet = np.ones(shape=(k,)) * 5
+weights = np_rng.dirichlet(alpha=alpha_dirichlet)
 locs = np_rng.normal(size=(k,)) * 5
-# scales = np.array([1.0, 2.0])
-scales = np_rng.normal(size=(k,)) * 0.1 + 1
-
-print(weights)
-print(locs)
-print(scales)
-
-import time
-
-time.sleep(2)
-
+scales = np.abs(np_rng.normal(size=(k,)))
 oracle = GaussianMixture(weights, locs, scales)
-print(oracle)
-x = oracle.sample(seed=1, n=10000)
-print(x)
+
+x = oracle.sample(seed=1, n=100_000)
 
 
-def log_likelihood(x, weights, locs, scales):
+@jax.jit
+def log_likelihood_differentiable(x, weights, locs, scales):
     np = jax.numpy
     stats = jax.scipy.stats
     n = len(x)
@@ -40,14 +27,10 @@ def log_likelihood(x, weights, locs, scales):
     assert probs.shape == (n, k)
     # weights = np.concatenate((weights[:-1], np.array([1.0 - np.sum(weights[:-1])])))
     assert weights.shape == (k,)
-    assert np.isclose(np.sum(weights), 1.0), (weights, np.sum(weights))
+    # assert np.isclose(np.sum(weights), 1.0), (weights, np.sum(weights))
     log_likelihoods = np.log(np.dot(probs, weights))  # (n, k) x (k,)
-    assert log_likelihoods.shape == (n,)
+    # assert log_likelihoods.shape == (n,)
     return np.mean(log_likelihoods)
-
-
-ll = log_likelihood(x, weights, locs, scales)
-print(ll)
 
 
 def initialize_parameters(k):
@@ -62,33 +45,52 @@ def learn_likelihood_only(x, k):
 
     t = 0
     step = 0.1
-    ll_value_old = -99999999999
+    log_likelihood_old = GaussianMixture(
+        weights, locs, scales
+    ).compute_log_likelihood(x)
     while True:
         t += 1
-        weights = weights / np.sum(weights)
-        log_likelihood_grad = jax.value_and_grad(
-            log_likelihood, argnums=(1, 2, 3)
+        log_likelihood_grad = jax.grad(
+            log_likelihood_differentiable, argnums=(1, 2, 3)
         )
-        ll_value, grads = log_likelihood_grad(x, weights, locs, scales)
-        weights_grad, locs_grad, scales_grad = grads
+        weights_grad, locs_grad, scales_grad = log_likelihood_grad(
+            x, weights, locs, scales
+        )
         weights = weights + step * weights_grad
         weights = np.clip(weights, 0, 1)
         weights = weights / np.sum(weights)
         locs = locs + step * locs_grad
         scales = scales + step * scales_grad
+        gmm_learned = GaussianMixture(weights, locs, scales)
+        log_likelihood = gmm_learned.compute_log_likelihood(x)
+        print("-" * 80)
         print("iteration", t)
         print("oracle", oracle)
-        print("log_likelihood", ll_value)
-        print("weights and grad\n", np.array([weights, weights_grad]))
-        print("locs and grad\n", np.array([locs, locs_grad]))
-        print("scales and grad\n", np.array([scales, scales_grad]))
-        print("learned", GaussianMixture(weights, locs, scales))
+        print("learned", gmm_learned)
+        print("weights_grad\n", weights_grad)
+        print("locs_grad\n", locs_grad)
+        print("scales_grad\n", scales_grad)
+        print("log_likelihood", log_likelihood)
+        print(
+            "improvement", log_likelihood - log_likelihood_old,
+        )
+
+        assert not np.isnan(log_likelihood)
         if np.any(weights < 0):
             break
-        if abs(ll_value - ll_value_old) < 0.0000000001:
+        if log_likelihood < log_likelihood_old:
+            raise ValueError("optimization issue; log_likelihood got worse")
+        if abs(log_likelihood - log_likelihood_old) < 1e-8:
             break
-        ll_value_old = ll_value
-    return
+        log_likelihood_old = log_likelihood
+    print("-" * 80)
+    return GaussianMixture(weights, locs, scales)
 
 
-learn_likelihood_only(x, k)
+gmm_learned = learn_likelihood_only(x, k)
+
+print("done. learned gaussian mixture:")
+print(gmm_learned)
+
+print("and the 'oracle' (truth) was:")
+print(oracle)

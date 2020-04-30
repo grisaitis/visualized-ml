@@ -13,17 +13,7 @@ locs = np_rng.normal(size=(k,)) * 5
 scales = np.abs(np_rng.normal(size=(k,)))
 oracle = GaussianMixture(weights, locs, scales)
 
-x = oracle.sample(seed=1, n=100000)
-
-
-def log_likelihood_f(x, weights, locs, scales):
-    n = len(x)
-    k = len(weights)
-    prob_xi_given_zi = stats.norm.pdf(x[:, None], loc=locs, scale=scales)
-    assert prob_xi_given_zi.shape == (n, k)
-    prob_zi = weights
-    prob_xi = prob_xi_given_zi @ prob_zi  # (n, k) @ (k,)
-    return np.sum(np.log(prob_xi))
+x = oracle.sample(seed=1, n=100_000)
 
 
 def compute_prob_zi_given_xi_prob(x, weights, locs, scales):
@@ -116,22 +106,25 @@ def initialize_parameters(k):
 
 def learn_em(x, k):
     weights, locs, scales = initialize_parameters(k)
+
     t = 0
-    log_likelihood_old = log_likelihood_f(x, weights, locs, scales)
+    log_likelihood_old = GaussianMixture(
+        weights, locs, scales
+    ).compute_log_likelihood(x)
     while True:
         t += 1
         weights, locs, scales = update_em(x, weights, locs, scales)
-        locs = np.array(locs)
-        log_likelihood = log_likelihood_f(x, weights, locs, scales)
+        gmm_leared = GaussianMixture(weights, locs, scales)
+        log_likelihood = gmm_leared.compute_log_likelihood(x)
         print("-" * 80)
         print("iteration", t)
         print("oracle", oracle)
-        print("learned", GaussianMixture(weights, locs, scales))
+        print("learned", gmm_leared)
         print("log_likelihood", log_likelihood)
         print(
             "improvement", log_likelihood - log_likelihood_old,
         )
-        if abs(log_likelihood - log_likelihood_old) < 1e-3:
+        if abs(log_likelihood - log_likelihood_old) < 1e-8:
             break
         if log_likelihood < log_likelihood_old:
             raise ValueError("optimization issue; log_likelihood got worse")
@@ -145,3 +138,6 @@ gmm_learned = learn_em(x, k)
 
 print("done. learned gaussian mixture:")
 print(gmm_learned)
+
+print("and the 'oracle' (truth) was:")
+print(oracle)

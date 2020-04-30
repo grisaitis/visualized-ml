@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.stats as stats
 
 
 class GaussianMixture:
@@ -29,3 +30,14 @@ class GaussianMixture:
         return normal_samples * self.scales.take(
             mixture_assignments
         ) + self.locs.take(mixture_assignments)
+
+    def compute_log_likelihood(self, x):
+        n = len(x)
+        assert x.shape == (n,)
+        prob_xi_given_zi = stats.norm.pdf(
+            x[:, None], loc=self.locs, scale=self.scales
+        )
+        assert prob_xi_given_zi.shape == (n, self.k)
+        prob_zi = self.weights
+        prob_xi = prob_xi_given_zi @ prob_zi  # (n, k) @ (k,)
+        return np.sum(np.log(prob_xi))
