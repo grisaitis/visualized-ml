@@ -23,7 +23,9 @@ def log_likelihood_differentiable(x, weights, locs, scales):
     return np.mean(log_likelihoods)
 
 
-log_likelihood_grad = jax.grad(log_likelihood_differentiable, argnums=(1, 2, 3))
+log_likelihood_grad = jax.grad(
+    log_likelihood_differentiable, argnums=(1, 2, 3)
+)
 
 
 def initialize_parameters(k):
