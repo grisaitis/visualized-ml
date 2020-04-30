@@ -16,7 +16,7 @@ oracle = GaussianMixture(weights, locs, scales)
 x = oracle.sample(seed=1, n=100_000)
 
 
-def compute_prob_zi_given_xi_prob(x, weights, locs, scales):
+def compute_prob_zi_given_xi(x, weights, locs, scales):
     n = len(x)
     k = len(weights)
     prob_xi_given_zi = stats.norm.pdf(
@@ -30,29 +30,6 @@ def compute_prob_zi_given_xi_prob(x, weights, locs, scales):
     prob_zi_given_xi = weights * a1  # (n, k)
     assert prob_zi_given_xi.shape == (n, k)
     return prob_zi_given_xi
-
-
-def compute_prob_zi_given_xi_log(x, weights, locs, scales):
-    n = len(x)
-    k = len(weights)
-    log_prob_xi_given_zi = stats.norm.logpdf(
-        x[:, None], loc=locs, scale=scales
-    )  # (n, k)
-    assert log_prob_xi_given_zi.shape == (n, k)
-    prob_xi_given_zi = stats.norm.pdf(
-        x[:, None], loc=locs, scale=scales
-    )  # (n, k)
-    assert prob_xi_given_zi.shape == (n, k)
-    prob_xi = prob_xi_given_zi @ weights  # (n,)
-    assert prob_xi.shape == (n,)
-    a = log_prob_xi_given_zi - np.log(prob_xi[:, None])
-    log_weights = np.log(weights)
-    log_prob_zi_given_xi = log_weights + a
-    assert log_prob_zi_given_xi.shape == (n, k)
-    return np.exp(log_prob_zi_given_xi)
-
-
-compute_prob_zi_given_xi = compute_prob_zi_given_xi_log
 
 
 def update_em(x, weights, locs, scales):
