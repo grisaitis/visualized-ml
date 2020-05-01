@@ -2,17 +2,16 @@ import numpy as np
 import scipy.stats as stats
 
 
-class GaussianMixture:
+class UnivariateGaussianMixture:
     def __init__(self, weights, locs, scales):
         self.k = len(weights)
         assert weights.shape == (self.k,)
         assert locs.shape == (self.k,)
         assert scales.shape == (self.k,)
         assert np.isclose(np.sum(weights), 1.0), (weights, np.sum(weights))
-        sort_order = locs.argsort()
-        self.weights = weights.take(sort_order)
-        self.locs = locs.take(sort_order)
-        self.scales = scales.take(sort_order)
+        self.weights = weights
+        self.locs = locs
+        self.scales = scales
 
     def __repr__(self):
         return (

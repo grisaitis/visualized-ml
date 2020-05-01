@@ -1,7 +1,7 @@
 import numpy as np
 
-from graphical_models.gaussian_mixture import (
-    GaussianMixture,
+from graphical_models.gaussian_mixture.univariate import (
+    UnivariateGaussianMixture,
     learn_likelihood_gradient,
 )
 
@@ -13,7 +13,7 @@ alpha_dirichlet = np.ones(shape=(k,)) * 5
 weights = np_rng.dirichlet(alpha=alpha_dirichlet)
 locs = np_rng.normal(size=(k,)) * 5
 scales = np.abs(np_rng.normal(size=(k,)))
-oracle = GaussianMixture(weights, locs, scales)
+oracle = UnivariateGaussianMixture(weights, locs, scales)
 
 x = oracle.sample(seed=1, n=100_000)
 

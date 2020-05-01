@@ -2,7 +2,7 @@ import jax
 import numpy as np
 import scipy.stats as stats
 
-from . import GaussianMixture
+from .univariate_gaussian_mixture import UnivariateGaussianMixture
 
 np_rng = np.random.default_rng(seed=0)
 
@@ -39,7 +39,7 @@ def learn_likelihood_gradient(x, k, oracle=None, step=0.1):
     weights, locs, scales = initialize_parameters(k)
 
     t = 0
-    log_likelihood_old = GaussianMixture(
+    log_likelihood_old = UnivariateGaussianMixture(
         weights, locs, scales
     ).compute_log_likelihood(x)
     while True:
@@ -55,7 +55,7 @@ def learn_likelihood_gradient(x, k, oracle=None, step=0.1):
         weights = weights / np.sum(weights)
         locs = locs + step * locs_grad
         scales = scales + step * scales_grad
-        gmm_learned = GaussianMixture(weights, locs, scales)
+        gmm_learned = UnivariateGaussianMixture(weights, locs, scales)
         log_likelihood = gmm_learned.compute_log_likelihood(x)
         print("-" * 80)
         print("iteration", t)
@@ -75,4 +75,4 @@ def learn_likelihood_gradient(x, k, oracle=None, step=0.1):
             break
         log_likelihood_old = log_likelihood
     print("-" * 80)
-    return GaussianMixture(weights, locs, scales)
+    return UnivariateGaussianMixture(weights, locs, scales)

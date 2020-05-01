@@ -12,7 +12,7 @@ you can also install dependencies with poetry:
 - `poetry install`
 
 and then run examples like
-- `python examples/gaussian_mixture/gaussian_mixture_em.py`
+- `python examples/gaussian_mixture/univariate_gmm_with_em.py`
 
 ## background
 
