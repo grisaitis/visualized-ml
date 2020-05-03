@@ -1,15 +1,13 @@
 # graphical models
 
-## how to run examples
+[![Nbviewer](https://img.shields.io/badge/render-nbviewer-orange.svg)](http://nbviewer.jupyter.org/github/grisaitis/graphical-models/tree/master/) [![Maintainability](https://api.codeclimate.com/v1/badges/014ea0978a4bcbf09c21/maintainability)](https://codeclimate.com/github/grisaitis/graphical-models/maintainability) [![Binder](https://mybinder.org/badge_logo.svg)](http://beta.mybinder.org/v2/gh/grisaitis/graphical-models/master) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/grisaitis/graphical-models/blob/master/)
 
-i have a few demos under examples/
+## installation
 
-to run this code you need
 - python 3.8 (maybe a version or two less)
-- `pip install jax jaxlib numpy`
-
-you can also install dependencies with poetry:
-- `poetry install`
+- dependencies
+  - with `pip`: `pip install jax jaxlib numpy`
+  - with `poetry`: `poetry install`
 
 and then run examples like
 - `python examples/gaussian_mixture/univariate_gmm_with_em.py`
