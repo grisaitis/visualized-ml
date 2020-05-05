@@ -1,18 +1,21 @@
 import time
 
 import jax
+import numpy as np
 
 from graphical_models.non_probabilistic.k_means_mixture import KMeansMixture
 
-n = 5
-d = 2
-key = jax.random.PRNGKey(seed=0)
+rng = np.random.default_rng(seed=0)
+
+n = 100
 k = 10
-gaussian_samples = jax.random.normal(key, shape=(n, d)) * 0.1
-offsets = jax.numpy.arange(n) % k
-x = gaussian_samples + offsets[:, None] + 1
+scale = 0.1
+locs = np.arange(n) % k + 1
+x = locs + scale * rng.normal(size=(n,))
 print(x)
 print(x.shape)
+
+key = jax.random.PRNGKey(seed=0)
 start = time.time()
 kmm = KMeansMixture.learn_with_lloyds_algorithm(key, x, k)
 print("means (final)", kmm.means)
