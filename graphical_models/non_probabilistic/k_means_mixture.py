@@ -33,6 +33,7 @@ class KMeansMixture:
 
 @jax.jit
 def _assign(x, means):
+    """assign each x_i to one of the means_k in means"""
     n, k = x.shape[0], means.shape[0]
     distances = jax.numpy.abs(x[:, None] - means[None, :])
     assert distances.shape == (n, k), distances.shape
@@ -45,6 +46,7 @@ def _assign(x, means):
 
 @jax.jit
 def _update_means(x, assignments):
+    """compute new means given each x_i's value and cluster assignment"""
     n, k = assignments.shape
     sum_x_per_k = x @ assignments
     assert sum_x_per_k.shape == (k,)
@@ -57,6 +59,7 @@ def _update_means(x, assignments):
 
 
 def _sample_no_replace(key, x, size):
+    """take `size` samples from x without replacement"""
     n = x.shape[0]
     return x[jax.random.shuffle(key, jax.numpy.arange(n))[:size]]
 
