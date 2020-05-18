@@ -73,21 +73,20 @@ def initialize_parameters(k):
 
 def learn_em(x, k, oracle=None):
     weights, locs, scales = initialize_parameters(k)
+    gaussian_mixture = UnivariateGaussianMixture(weights, locs, scales)
 
     t = 0
-    log_likelihood_old = UnivariateGaussianMixture(
-        weights, locs, scales
-    ).compute_log_likelihood(x)
+    log_likelihood_old = gaussian_mixture.log_likelihood(x)
     while True:
         t += 1
         weights, locs, scales = update_em(x, weights, locs, scales)
-        gmm_leared = UnivariateGaussianMixture(weights, locs, scales)
-        log_likelihood = gmm_leared.compute_log_likelihood(x)
+        gaussian_mixture = UnivariateGaussianMixture(weights, locs, scales)
+        log_likelihood = gaussian_mixture.log_likelihood(x)
         print("-" * 80)
         print("iteration", t)
         if oracle:
             print("oracle", oracle)
-        print("learned", gmm_leared)
+        print("learned", gaussian_mixture)
         print("log_likelihood", log_likelihood)
         print(
             "improvement", log_likelihood - log_likelihood_old,

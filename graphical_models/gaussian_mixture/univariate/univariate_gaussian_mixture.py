@@ -30,13 +30,15 @@ class UnivariateGaussianMixture:
             mixture_assignments
         ) + self.locs.take(mixture_assignments)
 
-    def compute_log_likelihood(self, x):
+    def log_likelihood(self, x):
+        prob_xi = self.pdf(x)
+        return np.sum(np.log(prob_xi))
+
+    def pdf(self, x):
         n = len(x)
         assert x.shape == (n,)
-        prob_xi_given_zi = stats.norm.pdf(
+        pdf_per_component = stats.norm.pdf(
             x[:, None], loc=self.locs, scale=self.scales
         )
-        assert prob_xi_given_zi.shape == (n, self.k)
-        prob_zi = self.weights
-        prob_xi = prob_xi_given_zi @ prob_zi  # (n, k) @ (k,)
-        return np.sum(np.log(prob_xi))
+        assert pdf_per_component.shape == (n, self.k)
+        return pdf_per_component @ self.weights  # (n, k) @ (k,)
