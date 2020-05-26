@@ -22,6 +22,14 @@ class UnivariateGaussianMixture:
             f"\n)"
         )
 
+    def to_dict(self):
+        return dict(
+            components=[
+                dict(weight=w, loc=l, scale=s)
+                for w, l, s in zip(self.weights, self.locs, self.scales)
+            ]
+        )
+
     def sample(self, seed, n):
         rng = np.random.default_rng(seed)
         normal_samples = rng.normal(size=(n,))
