@@ -1,9 +1,12 @@
+import logging
+
 import numpy as np
 import scipy.stats as stats
 
 from .univariate_gaussian_mixture import UnivariateGaussianMixture
 
 np_rng = np.random.default_rng(seed=0)
+logger = logging.getLogger(__name__)
 
 
 def compute_prob_zi_given_xi(x, weights, locs, scales):
@@ -82,18 +85,17 @@ def learn_em(x, k, oracle=None):
         weights, locs, scales = update_em(x, weights, locs, scales)
         gaussian_mixture = UnivariateGaussianMixture(weights, locs, scales)
         log_likelihood = gaussian_mixture.log_likelihood(x)
-        print("-" * 80)
-        print("iteration", t)
-        if oracle:
-            print("oracle", oracle)
-        print("learned", gaussian_mixture)
-        print("log_likelihood", log_likelihood)
-        print(
-            "improvement", log_likelihood - log_likelihood_old,
-        )
-        if abs(log_likelihood - log_likelihood_old) < 1e-8:
+        improvement = log_likelihood - log_likelihood_old
+        logger.debug(f"iteration {t}", extra={
+            "iteration": t,
+            "gaussian_mixture": gaussian_mixture,
+            "oracle": oracle,
+            "log_likelihood": log_likelihood,
+            "improvement": improvement,
+        })
+        if improvement < 1e-8:
             break
-        if log_likelihood < log_likelihood_old:
+        if improvement < 0:
             raise ValueError("optimization issue; log_likelihood got worse")
         assert not np.isnan(log_likelihood)
         log_likelihood_old = log_likelihood
