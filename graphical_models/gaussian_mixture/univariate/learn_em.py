@@ -1,4 +1,5 @@
 import logging
+import time
 
 import numpy as np
 import scipy.stats as stats
@@ -74,30 +75,31 @@ def initialize_parameters(k):
     return weights, locs, scales
 
 
-def learn_em(x, k, oracle=None):
+def learn_em(x, k, oracle=None, max_iter=1e10):
     weights, locs, scales = initialize_parameters(k)
     gaussian_mixture = UnivariateGaussianMixture(weights, locs, scales)
 
     t = 0
-    log_likelihood_old = gaussian_mixture.log_likelihood(x)
+    average_log_likelihood_old = gaussian_mixture.log_likelihood(x) / len(x)
     while True:
         t += 1
         weights, locs, scales = update_em(x, weights, locs, scales)
         gaussian_mixture = UnivariateGaussianMixture(weights, locs, scales)
-        log_likelihood = gaussian_mixture.log_likelihood(x)
-        improvement = log_likelihood - log_likelihood_old
-        logger.debug(f"iteration {t}", extra={
+        average_log_likelihood = gaussian_mixture.log_likelihood(x) / len(x)
+        improvement = average_log_likelihood - average_log_likelihood_old
+        is_done = (improvement < 1e-8) or (max_iter <= t)
+        logger.debug(f"iteration={t}, improvement={improvement:e}", extra={"data": {
             "iteration": t,
             "gaussian_mixture": gaussian_mixture,
             "oracle": oracle,
-            "log_likelihood": log_likelihood,
+            "average_log_likelihood": average_log_likelihood,
             "improvement": improvement,
-        })
-        if improvement < 1e-8:
-            break
+            "is_done": is_done,
+        }})
+        assert not np.isnan(average_log_likelihood)
         if improvement < 0:
-            raise ValueError("optimization issue; log_likelihood got worse")
-        assert not np.isnan(log_likelihood)
-        log_likelihood_old = log_likelihood
-    print("-" * 80)
+            raise ValueError("optimization error: likelihood got worse")
+        if is_done:
+            break
+        average_log_likelihood_old = average_log_likelihood
     return UnivariateGaussianMixture(weights, locs, scales)
