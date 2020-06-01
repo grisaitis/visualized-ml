@@ -1,6 +1,6 @@
 import numpy as np
 
-from graphical_models.hidden_markov_model import HiddenMarkovModel
+from visualized_ml.hidden_markov_model import HiddenMarkovModel
 
 transition = np.array([[0.8, 0.2], [0.4, 0.6]])
 initial_p = np.array([0.9, 0.1])

@@ -9,7 +9,7 @@ use_parentheses = true
 line_length = 79
 
 [tool.poetry]
-name = "graphical-models"
+name = "visualized-ml"
 version = "0.1.0"
 description = ""
 authors = ["William C Grisaitis <wgrisaitis@gmail.com>"]

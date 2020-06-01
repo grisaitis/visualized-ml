@@ -3,7 +3,7 @@ import time
 import jax
 import numpy as np
 
-from graphical_models.non_probabilistic.k_means_mixture import KMeansMixture
+from visualized_ml.non_probabilistic.k_means_mixture import KMeansMixture
 
 rng = np.random.default_rng(seed=0)
 

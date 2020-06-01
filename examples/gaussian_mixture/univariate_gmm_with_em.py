@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from graphical_models.gaussian_mixture.univariate import (
+from visualized_ml.gaussian_mixture.univariate import (
     UnivariateGaussianMixture,
     learn_em,
 )
