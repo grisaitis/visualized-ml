@@ -17,13 +17,7 @@ Probabilistic graphical models are (don't quote me on this) models that use cond
 ## my goals
 
 - implement and understand the following:
-  - models
-    - gaussian mixtures
-    - hidden markov models
-    - latent dirichlet allocation
-  - learning
-    - expectation maximization
-  - inference
-    - monte carlo
-    - variational
+  - probabilistic models (e.g. gaussian mixtures, hidden markov)
+  - learning / optimization algorithms (e.g. expectation maximization, various gradient or coordinate descent methods)
+  - inference algorithms (monte carlo methods, variational methods, maybe exact methods like Viterbi for hidden markov models)
 - visualize these models and algorithms, to better understand (and debug) them
