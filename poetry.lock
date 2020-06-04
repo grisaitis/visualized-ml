@@ -853,6 +853,21 @@ test = ["nose", "coverage", "requests", "nose-warnings-filters", "nbval", "nose-
 
 [[package]]
 category = "main"
+description = "Type hints for Numpy."
+name = "nptyping"
+optional = false
+python-versions = ">=3.5"
+version = "1.1.0"
+
+[package.dependencies]
+numpy = "*"
+typish = ">=1.5.2"
+
+[package.extras]
+test = ["pycodestyle", "pylint", "pytest", "coverage", "codecov"]
+
+[[package]]
+category = "main"
 description = "NumPy is the fundamental package for array computing with Python."
 name = "numpy"
 optional = false
@@ -1516,6 +1531,17 @@ version = "1.4.1"
 
 [[package]]
 category = "main"
+description = "Functionality for types"
+name = "typish"
+optional = false
+python-versions = "*"
+version = "1.6.0"
+
+[package.extras]
+test = ["numpy", "nptyping", "pycodestyle", "pylint", "mypy", "pytest", "coverage", "codecov"]
+
+[[package]]
+category = "main"
 description = "Ultra fast JSON encoder and decoder for Python"
 marker = "sys_platform != \"win32\" and implementation_name == \"cpython\""
 name = "ujson"
@@ -1612,7 +1638,7 @@ python-versions = "*"
 version = "1.12.1"
 
 [metadata]
-content-hash = "e066a18dc65ba848be24213e98afe007334389a1f2fdddd81e00b00afa235e90"
+content-hash = "517158670e80e4b66d5edc649e99482cca340b935bf16366e458392c02a5ddf6"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2044,6 +2070,9 @@ notebook = [
     {file = "notebook-6.0.3-py3-none-any.whl", hash = "sha256:3edc616c684214292994a3af05eaea4cc043f6b4247d830f3a2f209fa7639a80"},
     {file = "notebook-6.0.3.tar.gz", hash = "sha256:47a9092975c9e7965ada00b9a20f0cf637d001db60d241d479f53c0be117ad48"},
 ]
+nptyping = [
+    {file = "nptyping-1.1.0-py3-none-any.whl", hash = "sha256:071ce4ff004eb91aa9c35c48f39abaea8c3e2945060e6acf63c1743f62ed49df"},
+]
 numpy = [
     {file = "numpy-1.18.5-cp35-cp35m-macosx_10_9_intel.whl", hash = "sha256:e91d31b34fc7c2c8f756b4e902f901f856ae53a93399368d9a0dc7be17ed2ca0"},
     {file = "numpy-1.18.5-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:7d42ab8cedd175b5ebcb39b5208b25ba104842489ed59fbb29356f671ac93583"},
@@ -2463,6 +2492,9 @@ typed-ast = [
     {file = "typed_ast-1.4.1-cp38-cp38-win_amd64.whl", hash = "sha256:fc0fea399acb12edbf8a628ba8d2312f583bdbdb3335635db062fa98cf71fca4"},
     {file = "typed_ast-1.4.1-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:d43943ef777f9a1c42bf4e552ba23ac77a6351de620aa9acf64ad54933ad4d34"},
     {file = "typed_ast-1.4.1.tar.gz", hash = "sha256:8c8aaad94455178e3187ab22c8b01a3837f8ee50e09cf31f1ba129eb293ec30b"},
+]
+typish = [
+    {file = "typish-1.6.0-py3-none-any.whl", hash = "sha256:13f7d5f1b86faab11f016af6d82a157b12dba60a82f2e823608a3ee8165eac28"},
 ]
 ujson = [
     {file = "ujson-3.0.0-cp35-cp35m-macosx_10_14_x86_64.whl", hash = "sha256:0959a5b569e192459b492b007e3fd63d8f4b4bcb4f69dcddca850a9b9dfe3e7a"},
