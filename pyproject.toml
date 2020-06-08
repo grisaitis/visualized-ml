@@ -27,6 +27,8 @@ tensorflow-probability = "^0.9.0"
 tensorflow = "2.2.0rc3"
 sanic = "^19.12.2"
 nptyping = "^1.1.0"
+altair = "^4.1.0"
+vega_datasets = "^0.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
