@@ -7,7 +7,7 @@ from visualized_ml.gaussian_mixture.univariate import (
     learn_em,
 )
 
-logging.basicConfig(level='DEBUG')
+logging.basicConfig(level="DEBUG")
 logger = logging.getLogger(__name__)
 
 np.set_printoptions(suppress=True)

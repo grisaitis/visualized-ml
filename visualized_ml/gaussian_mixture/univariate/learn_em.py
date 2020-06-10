@@ -88,14 +88,19 @@ def learn_em(x, k, oracle=None, max_iter=1e10):
         average_log_likelihood = gaussian_mixture.log_likelihood(x) / len(x)
         improvement = average_log_likelihood - average_log_likelihood_old
         is_done = (improvement < 1e-8) or (max_iter <= t)
-        logger.debug(f"iteration={t}, improvement={improvement:e}", extra={"data": {
-            "iteration": t,
-            "gaussian_mixture": gaussian_mixture,
-            "oracle": oracle,
-            "average_log_likelihood": average_log_likelihood,
-            "improvement": improvement,
-            "is_done": is_done,
-        }})
+        logger.debug(
+            f"iteration={t}, improvement={improvement:e}",
+            extra={
+                "data": {
+                    "iteration": t,
+                    "gaussian_mixture": gaussian_mixture,
+                    "oracle": oracle,
+                    "average_log_likelihood": average_log_likelihood,
+                    "improvement": improvement,
+                    "is_done": is_done,
+                }
+            },
+        )
         assert not np.isnan(average_log_likelihood)
         if improvement < 0:
             raise ValueError("optimization error: likelihood got worse")
